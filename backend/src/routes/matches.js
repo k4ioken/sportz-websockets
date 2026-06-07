@@ -3,6 +3,7 @@ import { createMatchSchema,listMatchesQuerySchema } from '../validation/matches.
 import {db} from '../db/db.js';
 import {getMatchStatus} from '../utils/match-status.js';
 import {matches} from '../db/schemas/matches.schema.js'
+import {desc} from 'drizzle-orm';
 
 const matchesRouter= Router();
 const MAX_LIMIT=100;
@@ -32,13 +33,13 @@ matchesRouter.get('/',async (req,res)=>{
 
 matchesRouter.post('/',async (req,res)=>{
     const parsed=createMatchSchema.safeParse(req.body);
-    const {data: {startTime,endTime,homeScore,awayScore}}=parsed;
     if(!parsed.success){
         return res.status(400).json({
             error:'Invalid payload',
             details:JSON.stringify(parsed.error)
         })
     }
+    const {data: {startTime,endTime,homeScore,awayScore}}=parsed;
     try{
         //match creation logic from user input ,via extracting from parsed zod input
         const [event]=await db.insert(matches).values({
