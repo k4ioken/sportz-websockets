@@ -2,6 +2,7 @@ import {WebSocket, WebSocketServer} from 'ws';
 import {wsArcjet} from "../arcjet.js";
 
 const matchSubscribers = new Map();
+const MAX_BUFFER_SIZE = 50 * 1024; // 50KB backpressure limit
 
 function subscribe(matchId, socket) {
     if(!matchSubscribers.has(matchId)) {
@@ -32,6 +33,12 @@ function cleanupSubscriptions(socket) {
 function sendJson(socket, payload) {
     if(socket.readyState !== WebSocket.OPEN) return;
 
+    if (socket.bufferedAmount > MAX_BUFFER_SIZE) {
+        console.warn('Terminating socket: Buffer exceeded 50KB threshold.');
+        socket.terminate();
+        return;
+    }
+
     socket.send(JSON.stringify(payload));
 }
 
@@ -51,6 +58,12 @@ function broadcastToMatch(matchId, payload) {
 
     for(const client of subscribers) {
         if(client.readyState === WebSocket.OPEN) {
+
+            if (client.bufferedAmount > MAX_BUFFER_SIZE) {
+                client.terminate();
+                continue; // skip sending and move to the next client
+            }
+
             client.send(message);
         }
     }
