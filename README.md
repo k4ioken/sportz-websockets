@@ -258,6 +258,38 @@ curl -X POST "http://localhost:8000/matches/1/commentary" \
   }'
 ```
 
+## Wscat Example
+
+Install `wscat` if needed:
+
+```bash
+npm install -g wscat
+```
+
+Connect to the WebSocket server:
+
+```bash
+wscat -c ws://localhost:8000/ws
+```
+
+After connecting, you should receive a `welcome` message. Then subscribe to a match:
+
+```json
+{
+  "type": "subscribe",
+  "matchId": 1
+}
+```
+
+You can also unsubscribe:
+
+```json
+{
+  "type": "unsubscribe",
+  "matchId": 1
+}
+```
+
 ## WebSocket Usage
 
 Connect to `/ws` and send JSON messages.
