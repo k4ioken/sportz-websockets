@@ -137,6 +137,14 @@ npm start
 
 ## API Usage
 
+### Base URL
+
+If running locally with the default configuration:
+
+```bash
+http://localhost:8000
+```
+
 ### List matches
 
 ```bash
@@ -198,6 +206,56 @@ Content-Type: application/json
   },
   "tags": ["goal", "highlight"]
 }
+```
+
+## Curl Examples
+
+### List matches
+
+```bash
+curl -X GET "http://localhost:8000/matches?limit=10"
+```
+
+### Create a match
+
+```bash
+curl -X POST "http://localhost:8000/matches" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sport": "football",
+    "homeTeam": "Arsenal",
+    "awayTeam": "Chelsea",
+    "startTime": "2026-06-30T18:00:00.000Z",
+    "endTime": "2026-06-30T20:00:00.000Z",
+    "homeScore": 0,
+    "awayScore": 0
+  }'
+```
+
+### List commentary for a match
+
+```bash
+curl -X GET "http://localhost:8000/matches/1/commentary?limit=10"
+```
+
+### Create commentary for a match
+
+```bash
+curl -X POST "http://localhost:8000/matches/1/commentary" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "minute": 12,
+    "sequence": 1,
+    "period": "first_half",
+    "eventType": "goal",
+    "actor": "Player Name",
+    "team": "Arsenal",
+    "message": "A great finish from close range.",
+    "metadata": {
+      "assist": "Midfielder"
+    },
+    "tags": ["goal", "highlight"]
+  }'
 ```
 
 ## WebSocket Usage
